@@ -2,8 +2,7 @@ from sentence_transformers import SentenceTransformer
 import json
 import time
 
-
-model = SentenceTransformer('/app/model/')
+model = SentenceTransformer('./model/')
 
 def vectorize_text(text):
     embedding = model.encode([text], convert_to_tensor=True)

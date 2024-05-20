@@ -1,12 +1,27 @@
-FROM public.ecr.aws/lambda/python:3.12
+# ビルドステージ
+FROM python:3.12-slim AS build-stage
 
-# requirements.txtを使用して関数の依存関係をインストールする
-COPY requirements.txt  .
-RUN pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
+# 作業ディレクトリを設定
+WORKDIR /app
 
-# AWS ベースイメージには、環境変数「LAMBDA_TASK_ROOT=/var/task」が含まれています。
-COPY app.py ${LAMBDA_TASK_ROOT}
+# requirements.txtをコピーして依存関係をインストール
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt --target /app
+
+# モデルをコピー
 COPY sbert-jsnli-luke-japanese-base-lite /app/model
 
-# Dockerイメージ内の実行時のデフォルトコマンドを設定します。
+# ランタイムステージ
+FROM public.ecr.aws/lambda/python:3.12
+
+# 作業ディレクトリを設定
+WORKDIR ${LAMBDA_TASK_ROOT}
+
+# ビルドステージから依存関係をコピー
+COPY --from=build-stage /app /var/task
+
+# app.pyをコピー
+COPY app.py ${LAMBDA_TASK_ROOT}
+
+# デフォルトコマンドを設定
 CMD [ "app.handler" ]
