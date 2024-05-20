@@ -1,0 +1,3 @@
+awslambdaric
+sentence-transformers
+sentencepiece
