@@ -1,3 +1,4 @@
-awslambdaric
-sentence-transformers
-sentencepiece
+flask==3.0.3
+sentence-transformers==3.1.1
+sentencepiece==0.2.0
+gunicorn==23.0.0
